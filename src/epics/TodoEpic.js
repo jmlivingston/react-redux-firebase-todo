@@ -21,13 +21,13 @@ const todoEpic = actionStream => Observable.merge(
     ),
   actionStream.ofType(todoTypes.ADD)
     .switchMap(action => {
-      let newItem = { name: 'foo - ' + Math.random().toString() }
+      let newItem = { name: action.newValue }
       let id = uuidv4()
       return Observable.fromPromise(firebaseApp.database().ref('todos/' + id).set(newItem))
         .switchMap(results =>
           Observable.of({
             type: todoTypes.ADD_COMPLETE,
-            value: { ...newItem }
+            value: { [id]: newItem }
           })
         )
     })

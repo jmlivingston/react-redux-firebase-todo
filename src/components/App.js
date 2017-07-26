@@ -10,8 +10,8 @@ const App = () => <div className='App'>
 
 store.dispatch({ type: todoTypes.GET })
 
-setTimeout(() => {
-  store.dispatch({ type: todoTypes.ADD })
-}, 2000)
+// setTimeout(() => {
+//   store.dispatch({ type: todoTypes.ADD })
+// }, 2000)
 
 export default App
