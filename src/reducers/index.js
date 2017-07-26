@@ -1,7 +1,8 @@
 import { combineReducers } from 'redux'
+import { firebaseStateReducer } from 'react-redux-firebase'
 
-import app from './AppReducer'
+import todo from './TodoReducer'
 
-const reducers = combineReducers({ app })
+const reducers = combineReducers({ todo, firebase: firebaseStateReducer })
 
 export default reducers
