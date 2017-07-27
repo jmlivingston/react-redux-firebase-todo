@@ -9,11 +9,10 @@ const todo = (state = { todos: [], newValue: '' }, action) => {
         newValue: ''
       }
     case todoConstants.CHANGE:
-      let test = {
+      return {
         ...state,
         todos: { ...state.todos, ...{ [action.id]: action.value } }
       }
-      return test
     case todoConstants.NEW_CHANGE:
       return {
         ...state,
