@@ -1,9 +1,9 @@
 import { todoConstants } from '../config/constants'
 
-export const todoAdd = newValue => {
+export const todoAdd = value => {
   return {
     type: todoConstants.ADD,
-    newValue
+    value
   }
 }
 

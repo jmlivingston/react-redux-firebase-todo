@@ -6,7 +6,7 @@ const TodoAdd = ({ newValue, onAdd, onNewChange }) => {
   }
   const submit = e => {
     e.preventDefault()
-    onAdd(newValue)
+    onAdd({ name: newValue })
   }
   return <div>
     <form onSubmit={submit}>

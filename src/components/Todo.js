@@ -2,6 +2,10 @@ import React, { Component } from 'react'
 
 class Todo extends Component {
   state = { editMode: false }
+  styles = {
+    hiddenInEditMode: () => ({ display: `${this.state.editMode ? 'none' : 'inline-block'}` }),
+    visibleInEditMode: () => ({ display: `${this.state.editMode ? 'inline-block' : 'none'}` })
+  }
 
   toggleVisibility = () => {
     this.originalValue = !this.state.editMode ? this.props.value.name : ''
@@ -15,7 +19,7 @@ class Todo extends Component {
     this.toggleVisibility()
   }
 
-  change = e => {
+  inputChange = e => {
     this.props.onChange(this.props.itemKey, { ...this.props.value, ...{ name: e.target.value } })
   }
 
@@ -31,19 +35,17 @@ class Todo extends Component {
 
   render () {
     return <div>
-      <div style={{ display: `${this.state.editMode ? 'none' : 'inline-block'}` }} onClick={this.toggleVisibility}>
+      <div onClick={this.toggleVisibility} style={this.styles.hiddenInEditMode()}>
         {this.props.value.name}&nbsp;&nbsp;
       </div>
-      <input style={{ display: `${this.state.editMode ? 'inline-block' : 'none'}` }}
-        type='textbox' value={this.props.value.name}
-        onChange={this.change} />
-      <button onClick={this.update} style={{ display: `${this.state.editMode ? 'inline-block' : 'none'}` }}>
+      <input value={this.props.value.name} onChange={this.inputChange} style={this.styles.visibleInEditMode()} />
+      <button onClick={this.update} style={this.styles.visibleInEditMode()}>
         Update
       </button>
-      <button onClick={this.cancel} style={{ display: `${this.state.editMode ? 'inline-block' : 'none'}` }}>
+      <button onClick={this.cancel} style={this.styles.visibleInEditMode()}>
         Cancel
       </button>
-      <button onClick={this.delete} style={{ display: `${this.state.editMode ? 'none' : 'inline-block'}` }}>
+      <button onClick={this.delete} style={this.styles.hiddenInEditMode()}>
         Delete
       </button>
     </div>
