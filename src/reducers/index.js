@@ -1,8 +1,9 @@
 import { combineReducers } from 'redux'
-import { firebaseStateReducer } from 'react-redux-firebase'
+import { combineEpics } from 'redux-observable'
 
+import todoEpic from './TodoEpic'
 import todo from './TodoReducer'
 
-const reducers = combineReducers({ todo, firebase: firebaseStateReducer })
+export const reducers = combineReducers({ todo })
+export const epics = combineEpics(todoEpic)
 
-export default reducers

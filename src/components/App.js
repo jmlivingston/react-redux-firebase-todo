@@ -1,17 +1,13 @@
 import React from 'react'
-import Todo from '../containers/Todo'
-import { todoTypes } from '../types'
+import TodoContainer from '../containers/TodoContainer'
+import { todoConstants } from '../config/constants'
 import store from '../config/store'
 
 const App = () => <div className='App'>
-  <Todo />
+  <TodoContainer />
   App
 </div>
 
-store.dispatch({ type: todoTypes.GET })
-
-// setTimeout(() => {
-//   store.dispatch({ type: todoTypes.ADD })
-// }, 2000)
+store.dispatch({ type: todoConstants.GET })
 
 export default App
