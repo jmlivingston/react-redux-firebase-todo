@@ -1,7 +1,6 @@
 import { Observable } from 'rxjs/Observable'
 import 'rxjs/add/observable/fromPromise'
 import 'rxjs/add/observable/of'
-import 'rxjs/add/observable/merge'
 import 'rxjs/add/operator/switchMap'
 
 import firebaseApp from '../config/firebase'
@@ -35,11 +34,11 @@ const firebaseEpicHelper = {
   update: (action$, actionStart, actionComplete, refName) => (
     action$.ofType(actionStart)
       .switchMap(action => {
-        return Observable.fromPromise(firebaseApp.database().ref(refName + '/' + action.id).set(action.value))
+        return Observable.fromPromise(firebaseApp.database().ref(refName + '/' + action.key).set(action.value))
           .switchMap(results =>
             Observable.of({
               type: actionComplete,
-              id: action.id
+              key: action.key
             })
           )
       })
@@ -47,11 +46,11 @@ const firebaseEpicHelper = {
   remove: (action$, actionStart, actionComplete, refName) => (
     action$.ofType(actionStart)
       .switchMap(action => {
-        return Observable.fromPromise(firebaseApp.database().ref(refName + '/' + action.id).remove())
+        return Observable.fromPromise(firebaseApp.database().ref(refName + '/' + action.key).remove())
           .switchMap(results =>
             Observable.of({
               type: actionComplete,
-              id: action.id
+              key: action.key
             })
           )
       })

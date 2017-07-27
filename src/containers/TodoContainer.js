@@ -12,17 +12,17 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
   onAdd (value) {
     dispatch(todoAdd(value))
   },
-  onChange (id, value) {
-    dispatch(todoChange(id, value))
+  onChange (key, value) {
+    dispatch(todoChange(key, value))
   },
   onNewChange (value) {
     dispatch(todoNewChange(value))
   },
-  onDelete (id) {
-    dispatch(todoDelete(id))
+  onDelete (key) {
+    dispatch(todoDelete(key))
   },
-  onUpdate (id, value) {
-    dispatch(todoUpdate(id, value))
+  onUpdate (key, value) {
+    dispatch(todoUpdate(key, value))
   }
 })
 

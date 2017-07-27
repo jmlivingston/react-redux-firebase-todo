@@ -7,11 +7,11 @@ const reducerHelper = {
     },
     [valueName]: ''
   }),
-  change: (state, action, objectName, valueName, idName) => ({
+  change: (state, action, objectName, valueName, keyName) => ({
     ...state,
     [objectName]: {
       ...state[objectName],
-      ...{ [action[idName]]: action[valueName] }
+      ...{ [action[keyName]]: action[valueName] }
     }
   }),
   newChange: (state, action, valueName) => ({
@@ -23,9 +23,9 @@ const reducerHelper = {
     [objectName]: action[objectName]
   }),
   updateComplete: (state) => (state),
-  deleteComplete: (state, action, objectName, idName) => {
+  deleteComplete: (state, action, objectName, keyName) => {
     const {
-      [action.id]: filteredValue,
+      [action.key]: filteredValue,
       ...filteredTodos
     } = state[objectName]
     return {

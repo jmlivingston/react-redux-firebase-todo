@@ -7,9 +7,9 @@ export const todoAdd = value => {
   }
 }
 
-export const todoChange = (id, value) => ({
+export const todoChange = (key, value) => ({
   type: todoConstants.CHANGE,
-  id,
+  key,
   value
 })
 
@@ -18,13 +18,13 @@ export const todoNewChange = value => ({
   value
 })
 
-export const todoDelete = id => ({
+export const todoDelete = key => ({
   type: todoConstants.DELETE,
-  id
+  key
 })
 
-export const todoUpdate = (id, value) => ({
+export const todoUpdate = (key, value) => ({
   type: todoConstants.UPDATE,
-  id,
+  key,
   value
 })
