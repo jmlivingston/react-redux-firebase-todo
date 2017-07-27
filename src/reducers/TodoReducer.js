@@ -5,7 +5,7 @@ const objectName = 'todos'
 const keyName = 'key'
 const valueName = 'value'
 
-const todo = (state = { todos: [], value: '' }, action) => {
+const todo = (state = { todos: {}, value: '' }, action) => {
   switch (action.type) {
     case todoConstants.ADD_COMPLETE:
       return reducerHelper.addComplete(state, action, objectName, valueName)

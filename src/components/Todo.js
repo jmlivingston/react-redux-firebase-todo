@@ -1,6 +1,16 @@
+import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
 class Todo extends Component {
+  static propTypes = {
+    value: PropTypes.shape({
+      name: PropTypes.string.isRequired
+    }),
+    itemKey: PropTypes.string.isRequired,
+    onChange: PropTypes.func.isRequired,
+    onUpdate: PropTypes.func.isRequired,
+    onDelete: PropTypes.func.isRequired
+  }
   state = { editMode: false }
   styles = {
     hiddenInEditMode: () => ({ display: `${this.state.editMode ? 'none' : 'inline-block'}` }),
