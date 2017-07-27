@@ -1,10 +1,7 @@
 import React, { Component } from 'react'
 
 class Todo extends Component {
-  constructor(props) {
-    super(props)
-    this.state = { editMode: false }
-  }
+  state = { editMode: false }
 
   toggleVisibility = () => {
     this.originalValue = !this.state.editMode ? this.props.value.name : ''
@@ -32,7 +29,7 @@ class Todo extends Component {
     this.props.onDelete(this.props.itemKey)
   }
 
-  render() {
+  render () {
     return <div>
       <div style={{ display: `${this.state.editMode ? 'none' : 'inline-block'}` }} onClick={this.toggleVisibility}>
         {this.props.value.name}&nbsp;&nbsp;
