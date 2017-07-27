@@ -1,16 +1,16 @@
 import React from 'react'
 
-const TodoAdd = ({ newValue, onAdd, onNewChange }) => {
+const TodoAdd = ({ value, onAdd, onNewChange }) => {
   const change = e => {
     onNewChange(e.target.value)
   }
   const submit = e => {
     e.preventDefault()
-    onAdd({ name: newValue })
+    onAdd({ name: value })
   }
   return <div>
     <form onSubmit={submit}>
-      <input type='textbox' value={newValue} onChange={change} />
+      <input type='textbox' value={value} onChange={change} />
       <button type='submit'>Add</button>
     </form>
   </div>

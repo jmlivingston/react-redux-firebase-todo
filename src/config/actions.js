@@ -13,9 +13,9 @@ export const todoChange = (id, value) => ({
   value
 })
 
-export const todoNewChange = newValue => ({
+export const todoNewChange = value => ({
   type: todoConstants.NEW_CHANGE,
-  newValue
+  value
 })
 
 export const todoDelete = id => ({

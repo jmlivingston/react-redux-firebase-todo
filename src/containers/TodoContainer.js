@@ -4,19 +4,19 @@ import TodoView from '../components/TodoView'
 import { todoAdd, todoChange, todoDelete, todoNewChange, todoUpdate } from '../config/actions'
 
 const mapStateToProps = (state, ownProps) => ({
-  newValue: state.todo.newValue,
+  value: state.todo.value,
   todos: state.todo.todos
 })
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  onAdd (newValue) {
-    dispatch(todoAdd(newValue))
+  onAdd (value) {
+    dispatch(todoAdd(value))
   },
   onChange (id, value) {
     dispatch(todoChange(id, value))
   },
-  onNewChange (newValue) {
-    dispatch(todoNewChange(newValue))
+  onNewChange (value) {
+    dispatch(todoNewChange(value))
   },
   onDelete (id) {
     dispatch(todoDelete(id))

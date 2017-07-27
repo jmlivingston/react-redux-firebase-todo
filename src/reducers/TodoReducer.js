@@ -1,36 +1,24 @@
 import { todoConstants } from '../config/constants'
+import reducerHelper from './ReducerHelper'
 
-const todo = (state = { todos: [], newValue: '' }, action) => {
+const objectName = 'todos'
+const idName = 'id'
+const valueName = 'value'
+
+const todo = (state = { todos: [], value: '' }, action) => {
   switch (action.type) {
     case todoConstants.ADD_COMPLETE:
-      return {
-        ...state,
-        todos: { ...state.todos, ...action.value },
-        newValue: ''
-      }
+      return reducerHelper.addComplete(state, action, objectName, valueName)
     case todoConstants.CHANGE:
-      return {
-        ...state,
-        todos: { ...state.todos, ...{ [action.id]: action.value } }
-      }
+      return reducerHelper.change(state, action, objectName, valueName, idName)
     case todoConstants.NEW_CHANGE:
-      return {
-        ...state,
-        newValue: action.newValue
-      }
+      return reducerHelper.newChange(state, action, valueName)
     case todoConstants.GET_COMPLETE:
-      return {
-        ...state,
-        todos: action.todos
-      }
+      return reducerHelper.getComplete(state, action, objectName)
     case todoConstants.UPDATE_COMPLETE:
-      return state
+      return reducerHelper.updateComplete(state)
     case todoConstants.DELETE_COMPLETE:
-      const { [action.id]: filteredValue, ...filteredTodos } = state.todos
-      return {
-        ...state,
-        todos: filteredTodos
-      }
+      return reducerHelper.deleteComplete(state, action, objectName, idName)
     default:
       return state
   }
