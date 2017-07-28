@@ -6,14 +6,14 @@ import 'rxjs/add/operator/switchMap'
 import firebaseApp from '../config/firebase'
 
 const firebaseEpicHelper = {
-  get: (action$, actionStart, actionComplete, refName, returnName) => (
+  get: (action$, actionStart, actionComplete, refName) => (
     action$.ofType(actionStart)
       .switchMap(action =>
         Observable.fromPromise(firebaseApp.database().ref(refName).once('value'))
           .switchMap(results =>
             Observable.of({
               type: actionComplete,
-              [returnName]: results.toJSON()
+              [refName]: results.toJSON()
             })
           )
       )
