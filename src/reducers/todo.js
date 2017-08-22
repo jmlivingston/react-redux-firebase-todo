@@ -1,7 +1,5 @@
 import { Observable } from 'rxjs/Observable'
-import 'rxjs/add/observable/empty'
 import 'rxjs/add/observable/merge'
-import 'rxjs/add/operator/switchMap'
 
 import { TODO, TODO_PREFIX } from '../config/constants'
 import firebaseEpicHelper from './firebaseEpicHelper'
