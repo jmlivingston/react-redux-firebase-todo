@@ -5,15 +5,6 @@ const firebaseReducerHelper = {
       [action.recordSetKey]: action[action.recordSetKey]
     }
   },
-  saveRecordComplete: (state, action) => {
-    return {
-      ...state,
-      [action.recordSetKey]: {
-        ...state[action.recordSetKey],
-        [action.recordKey]: action.recordKeyValue
-      }
-    }
-  },
   removeRecordComplete: (state, action) => {
     const { [action.recordKey]: filteredValue, ...filteredItems } = state[
       action.recordSetKey
@@ -22,6 +13,15 @@ const firebaseReducerHelper = {
       ...state,
       [action.recordSetKey]: {
         ...filteredItems
+      }
+    }
+  },
+  saveRecordComplete: (state, action) => {
+    return {
+      ...state,
+      [action.recordSetKey]: {
+        ...state[action.recordSetKey],
+        [action.recordKey]: action.recordKeyValue
       }
     }
   }

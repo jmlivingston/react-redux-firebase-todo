@@ -21,9 +21,9 @@ const concatPostActions = action => {
 }
 
 const firebaseEpicHelper = {
-  getRecordSet: (action$, actionStart, isAsync) => {
+  getRecordSet: (action$, actionType, isAsync) => {
     return action$
-      .ofType(actionStart)
+      .ofType(actionType)
       .switchMap(action => {
         const postActions = action.postActions ? [...action.postActions] : []
         let observable = null
@@ -55,9 +55,9 @@ const firebaseEpicHelper = {
       })
       .catch(error => Observable.of({ type: APP.LOG_ERROR, error: error }))
   },
-  removeRecord: (action$, actionStart) => {
+  removeRecord: (action$, actionType) => {
     return action$
-      .ofType(actionStart)
+      .ofType(actionType)
       .switchMap(action => {
         return Observable.fromPromise(
           firebaseRef(action.recordSetKey + '/' + action.recordKey).remove()
@@ -65,9 +65,9 @@ const firebaseEpicHelper = {
       })
       .catch(error => Observable.of({ type: APP.LOG_ERROR, error: error }))
   },
-  saveRecord: (action$, actionStart) => {
+  saveRecord: (action$, actionType) => {
     return action$
-      .ofType(actionStart)
+      .ofType(actionType)
       .switchMap(action => {
         return Observable.fromPromise(
           firebaseRef(action.recordSetKey + '/' + action.recordKey).set(
