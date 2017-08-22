@@ -2,7 +2,7 @@ const firebaseReducerHelper = {
   getRecordSetComplete: (state, action) => {
     return {
       ...state,
-      [action.recordSetKey]: action[action.recordSetKey]
+      [action.recordSetKey]: action.recordSetKeyValue
     }
   },
   removeRecordComplete: (state, action) => {

@@ -3,14 +3,18 @@ import uuidv4 from 'uuid/v4'
 
 const todoRecordSetKey = 'todos'
 const newTodoRecordSetKey = 'newTodo'
-const isAsync = false
+const isAsync = true
 
 export const todoGetRecordSet = () => {
   return {
     type: TODO.GET_RECORDSET,
-    completeActionType: TODO.GET_RECORDSET_COMPLETE,
     recordSetKey: todoRecordSetKey,
-    isAsync
+    isAsync,
+    postActions: [
+      {
+        type: TODO.GET_RECORDSET_COMPLETE
+      }
+    ]
   }
 }
 
@@ -59,15 +63,14 @@ export const todoSaveRecord = (recordKey, todo, isNew) => {
 }
 
 export const todoRemoveRecord = todoKey => {
-  const postActions = [
-    {
-      type: TODO.REMOVE_RECORD_COMPLETE
-    }
-  ]
   return {
     type: TODO.REMOVE_RECORD,
     recordSetKey: todoRecordSetKey,
     recordKey: todoKey,
-    postActions
+    postActions: [
+      {
+        type: TODO.REMOVE_RECORD_COMPLETE
+      }
+    ]
   }
 }

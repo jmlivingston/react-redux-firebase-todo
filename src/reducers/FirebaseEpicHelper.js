@@ -25,7 +25,6 @@ const firebaseEpicHelper = {
     return action$
       .ofType(actionType)
       .switchMap(action => {
-        const postActions = action.postActions ? [...action.postActions] : []
         let observable = null
         if (action.isAsync) {
           observable = Observable.create(observer => {
@@ -39,18 +38,8 @@ const firebaseEpicHelper = {
           ).map(results => results.toJSON())
         }
         return observable.switchMap(results => {
-          const newAction = {
-            ...action,
-            postActions: [
-              {
-                ...action,
-                type: action.completeActionType,
-                [action.recordSetKey]: results
-              },
-              ...postActions
-            ]
-          }
-          return concatPostActions(newAction)
+          action.recordSetKeyValue = results
+          return concatPostActions(action)
         })
       })
       .catch(error => Observable.of({ type: APP.LOG_ERROR, error: error }))
