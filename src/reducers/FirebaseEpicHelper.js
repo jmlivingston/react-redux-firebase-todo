@@ -1,5 +1,6 @@
 import { Observable } from 'rxjs/Observable'
 import 'rxjs/add/observable/concat'
+import 'rxjs/add/observable/empty'
 import 'rxjs/add/observable/fromPromise'
 import 'rxjs/add/observable/of'
 import 'rxjs/add/operator/catch'
@@ -12,13 +13,13 @@ import firebaseApp from '../config/firebase'
 const concatActions = action => {
   const { postActions, ...noActions } = action
   return Observable.concat(
-    action.postActions.map(postAction => {
+    postActions ? postActions.map(postAction => {
       return {
         ...action,
         noActions,
         ...postAction
       }
-    })
+    }) : Observable.of({ type: APP.LOG_ERROR, error: 'Missing postActions for ' + action.type })
   )
 }
 
@@ -85,7 +86,6 @@ const firebaseEpicHelper = {
     return action$
       .ofType(actionStart)
       .switchMap((action) => {
-        action.postActions = action.postAction || []
         return Observable.fromPromise(
           firebaseApp
             .database()
