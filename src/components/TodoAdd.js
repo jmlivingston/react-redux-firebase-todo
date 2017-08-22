@@ -1,26 +1,40 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-const TodoAdd = ({ value, onAdd, onNewChange }) => {
+const TodoAdd = ({ newTodo, set, setNew }) => {
   const change = e => {
-    onNewChange(e.target.value)
+    setNew(e.target.value)
   }
   const submit = e => {
     e.preventDefault()
-    onAdd({ name: value })
+    set(null, newTodo)
   }
-  return <div>
-    <form onSubmit={submit}>
-      <input type='textbox' value={value} onChange={change} />
-      <button type='submit'>Add</button>
-    </form>
-  </div>
+  return (
+    <div>
+      <form onSubmit={submit} className="row">
+        <div className="col-sm-3">
+          <input
+            type="textbox"
+            value={newTodo.title}
+            onChange={change}
+            className="form-control form-control-sm mr-1"
+            placeholder="Add Todo..."
+          />
+        </div>
+        <div className="col-sm-9 pull-left">
+          <button type="submit" className="btn btn-primary btn-sm">
+            Add
+          </button>
+        </div>
+      </form>
+    </div>
+  )
 }
 
 TodoAdd.propTypes = {
-  value: PropTypes.string.isRequired,
-  onAdd: PropTypes.func.isRequired,
-  onNewChange: PropTypes.func.isRequired
+  newTodo: PropTypes.object.isRequired,
+  set: PropTypes.func.isRequired,
+  setNew: PropTypes.func.isRequired
 }
 
 export default TodoAdd

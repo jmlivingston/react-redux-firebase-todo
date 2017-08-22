@@ -1,8 +1,7 @@
-import { combineReducers } from 'redux'
 import { combineEpics } from 'redux-observable'
+import { combineReducers } from 'redux'
 
-import todoEpic from './TodoEpic'
-import todo from './TodoReducer'
+import { todo, todoEpic } from './todo'
 
 export const reducers = combineReducers({ todo })
 export const epics = combineEpics(todoEpic)

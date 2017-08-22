@@ -1,60 +1,104 @@
 import { Observable } from 'rxjs/Observable'
+import 'rxjs/add/observable/concat'
 import 'rxjs/add/observable/fromPromise'
 import 'rxjs/add/observable/of'
+import 'rxjs/add/operator/catch'
+import 'rxjs/add/operator/map'
 import 'rxjs/add/operator/switchMap'
 
+import { APP } from '../config/constants'
 import firebaseApp from '../config/firebase'
 
-const firebaseEpicHelper = {
-  get: (action$, actionStart, actionComplete, refName) => (
-    action$.ofType(actionStart)
-      .switchMap(action =>
-        Observable.fromPromise(firebaseApp.database().ref(refName).once('value'))
-          .switchMap(results =>
-            Observable.of({
-              type: actionComplete,
-              [refName]: results.toJSON()
-            })
-          )
-      )
-  ),
-  add: (action$, actionStart, actionComplete, refName) => (
-    action$.ofType(actionStart)
-      .switchMap(action => {
-        const newRef = firebaseApp.database().ref(refName).push()
-        return Observable.fromPromise(newRef.set(action.value))
-          .switchMap(results =>
-            Observable.of({
-              type: actionComplete,
-              value: { [newRef.key]: action.value }
-            })
-          )
-      })
-  ),
-  update: (action$, actionStart, actionComplete, refName) => (
-    action$.ofType(actionStart)
-      .switchMap(action => {
-        return Observable.fromPromise(firebaseApp.database().ref(refName + '/' + action.key).set(action.value))
-          .switchMap(results =>
-            Observable.of({
-              type: actionComplete,
-              key: action.key
-            })
-          )
-      })
-  ),
-  remove: (action$, actionStart, actionComplete, refName) => (
-    action$.ofType(actionStart)
-      .switchMap(action => {
-        return Observable.fromPromise(firebaseApp.database().ref(refName + '/' + action.key).remove())
-          .switchMap(results =>
-            Observable.of({
-              type: actionComplete,
-              key: action.key
-            })
-          )
-      })
+const concatActions = action => {
+  const { postActions, ...noActions } = action
+  return Observable.concat(
+    action.postActions.map(postAction => {
+      return {
+        ...action,
+        noActions,
+        ...postAction
+      }
+    })
   )
+}
+
+const firebaseEpicHelper = {
+  getRecordSet: (action$, actionStart, isAsync) => {
+    return action$
+      .ofType(actionStart)
+      .switchMap(action => {
+        if (action.isAsync) {
+          return Observable.create(obs => {
+            firebaseApp
+              .database()
+              .ref(action.recordSetKey)
+              .on('value', snapshot => {
+                obs.next(snapshot.val())
+              })
+          }).map(results => {
+            return {
+              ...action,
+              type: action.completeActionType,
+              [action.recordSetKey]: results
+            }
+          })
+        } else {
+          return Observable.fromPromise(
+            firebaseApp.database().ref(action.recordSetKey).once('value')
+          ).map(results => {
+            return {
+              ...action,
+              type: action.completeActionType,
+              [action.recordSetKey]: results.toJSON()
+            }
+          })
+        }
+      })
+      .catch(error => {
+        return Observable.of({ type: APP.LOG_ERROR, error: error })
+      })
+  },
+  log: (action$, prefix) => {
+    return action$.ofType(APP.LOG_ERROR).switchMap(action => {
+      console.error(prefix + ' Error: ' + action.error)
+      return Observable.empty()
+    })
+  },
+  removeRecord: (action$, actionStart) => {
+    return action$
+      .ofType(actionStart)
+      .switchMap(action => {
+        return Observable.fromPromise(
+          firebaseApp
+            .database()
+            .ref(action.recordSetKey + '/' + action.recordKey)
+            .remove()
+        ).switchMap(() => {
+          return concatActions(action)
+        })
+      })
+      .catch(error => {
+        return Observable.of({ type: APP.LOG_ERROR, error: error })
+      })
+  },
+  setRecord: (action$, actionStart) => {
+    return action$
+      .ofType(actionStart)
+      .switchMap((action) => {
+        action.postActions = action.postAction || []
+        return Observable.fromPromise(
+          firebaseApp
+            .database()
+            .ref(action.recordSetKey + '/' + action.recordKey)
+            .set(action.recordKeyValue)
+        ).switchMap(() => {
+          return concatActions(action)
+        })
+      })
+      .catch(error => {
+        return Observable.of({ type: APP.LOG_ERROR, error: error })
+      })
+  }
 }
 
 export default firebaseEpicHelper

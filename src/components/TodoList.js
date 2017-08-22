@@ -3,20 +3,33 @@ import React from 'react'
 
 import Todo from './Todo'
 
-const TodoList = ({ todos, onChange, onDelete, onUpdate }) => <ul>
-  {
-    todos && Object.keys(todos).map(key => <Todo key={key} itemKey={key} value={todos[key]}
-      onChange={onChange} onDelete={onDelete} onUpdate={onUpdate} />)
-  }
-</ul>
+const TodoList = ({ todos, update, remove, set }) => {
+  return (
+    <div>
+      {todos &&
+        Object.keys(todos).map(key =>
+          <Todo
+            key={key}
+            itemKey={key}
+            todo={todos[key]}
+            update={update}
+            remove={remove}
+            set={set}
+          />
+        )}
+    </div>
+  )
+}
 
 TodoList.propTypes = {
-  todos: PropTypes.objectOf(PropTypes.shape({
-    name: PropTypes.string.isRequired
-  })),
-  onChange: PropTypes.func.isRequired,
-  onDelete: PropTypes.func.isRequired,
-  onUpdate: PropTypes.func.isRequired
+  todos: PropTypes.objectOf(
+    PropTypes.shape({
+      title: PropTypes.string.isRequired
+    })
+  ),
+  update: PropTypes.func.isRequired,
+  remove: PropTypes.func.isRequired,
+  set: PropTypes.func.isRequired
 }
 
 export default TodoList

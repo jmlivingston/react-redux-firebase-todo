@@ -1,30 +1,73 @@
-import { todoConstants } from '../config/constants'
+import { TODO } from '../config/constants'
+import uuidv4 from 'uuid/v4'
 
-export const todoAdd = value => {
+const todoRecordSetKey = 'todos'
+const newTodoRecordSetKey = 'newTodo'
+const isAsync = false
+
+export const todoGetRecordSet = () => {
   return {
-    type: todoConstants.ADD,
-    value
+    type: TODO.GET_RECORDSET,
+    completeActionType: TODO.GET_RECORDSET_COMPLETE,
+    recordSetKey: todoRecordSetKey,
+    isAsync
   }
 }
 
-export const todoChange = (key, value) => ({
-  type: todoConstants.CHANGE,
-  key,
-  value
-})
+export const todoChangeNew = recordKeyValue => {
+  return {
+    type: TODO.CHANGE_RECORD,
+    recordSetKey: newTodoRecordSetKey,
+    recordKey: 'title',
+    recordKeyValue
+  }
+}
 
-export const todoNewChange = value => ({
-  type: todoConstants.NEW_CHANGE,
-  value
-})
+export const todoUpdateRecord = (recordKey, recordKeyValue) => {
+  return {
+    type: TODO.SAVE_RECORD_COMPLETE,
+    recordSetKey: todoRecordSetKey,
+    recordKey,
+    recordKeyValue
+  }
+}
 
-export const todoDelete = key => ({
-  type: todoConstants.DELETE,
-  key
-})
+export const todoSaveRecord = (recordKey, todo, isNew) => {
+  todo = { ...todo, modified: new Date().toUTCString() }
+  const postActions = [
+    {
+      type: TODO.SAVE_RECORD_COMPLETE
+    }
+  ]
+  if (!recordKey) {
+    recordKey = uuidv4()
+    todo.created = new Date().toUTCString()
+    postActions.push({
+      type: TODO.CHANGE_RECORD,
+      recordSetKey: newTodoRecordSetKey,
+      recordKey: 'title',
+      recordKeyValue: ''
+    })
+  }
+  return {
+    type: TODO.SAVE_RECORD,
+    recordSetKey: todoRecordSetKey,
+    recordKey,
+    recordKeyValue: todo,
+    postActions
+  }
+}
 
-export const todoUpdate = (key, value) => ({
-  type: todoConstants.UPDATE,
-  key,
-  value
-})
+export const todoRemoveRecord = todoKey => {
+  const postActions = [
+    {
+      type: TODO.REMOVE_RECORD_COMPLETE
+    }
+  ]
+  return {
+    type: TODO.REMOVE_RECORD,
+    recordSetKey: todoRecordSetKey,
+    recordKey: todoKey,
+    postActions
+  }
+}
