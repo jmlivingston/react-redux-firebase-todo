@@ -1,6 +1,5 @@
 import { Observable } from 'rxjs/Observable'
 import 'rxjs/add/observable/concat'
-import 'rxjs/add/observable/empty'
 import 'rxjs/add/observable/fromPromise'
 import 'rxjs/add/observable/of'
 import 'rxjs/add/operator/catch'
@@ -8,18 +7,16 @@ import 'rxjs/add/operator/map'
 import 'rxjs/add/operator/switchMap'
 
 import { APP } from '../config/constants'
-import firebaseApp from '../config/firebase'
+import { firebaseRef } from '../config/firebase'
 
-const concatActions = action => {
+const concatPostActions = action => {
   const { postActions, ...noActions } = action
   return Observable.concat(
-    postActions ? postActions.map(postAction => {
-      return {
-        ...action,
-        noActions,
-        ...postAction
-      }
-    }) : Observable.of({ type: APP.LOG_ERROR, error: 'Missing postActions for ' + action.type })
+    postActions.map(postAction => ({
+      ...action,
+      noActions,
+      ...postAction
+    }))
   )
 }
 
@@ -28,76 +25,57 @@ const firebaseEpicHelper = {
     return action$
       .ofType(actionStart)
       .switchMap(action => {
+        const postActions = action.postActions ? [...action.postActions] : []
+        let observable = null
         if (action.isAsync) {
-          return Observable.create(obs => {
-            firebaseApp
-              .database()
-              .ref(action.recordSetKey)
-              .on('value', snapshot => {
-                obs.next(snapshot.val())
-              })
-          }).map(results => {
-            return {
-              ...action,
-              type: action.completeActionType,
-              [action.recordSetKey]: results
-            }
+          observable = Observable.create(observer => {
+            firebaseRef(action.recordSetKey).on('value', snapshot => {
+              observer.next(snapshot.val())
+            })
           })
         } else {
-          return Observable.fromPromise(
-            firebaseApp.database().ref(action.recordSetKey).once('value')
-          ).map(results => {
-            return {
-              ...action,
-              type: action.completeActionType,
-              [action.recordSetKey]: results.toJSON()
-            }
-          })
+          observable = Observable.fromPromise(
+            firebaseRef(action.recordSetKey).once('value')
+          ).map(results => results.toJSON())
         }
+        return observable.switchMap(results => {
+          const newAction = {
+            ...action,
+            postActions: [
+              {
+                ...action,
+                type: action.completeActionType,
+                [action.recordSetKey]: results
+              },
+              ...postActions
+            ]
+          }
+          return concatPostActions(newAction)
+        })
       })
-      .catch(error => {
-        return Observable.of({ type: APP.LOG_ERROR, error: error })
-      })
-  },
-  log: (action$, prefix) => {
-    return action$.ofType(APP.LOG_ERROR).switchMap(action => {
-      console.error(prefix + ' Error: ' + action.error)
-      return Observable.empty()
-    })
+      .catch(error => Observable.of({ type: APP.LOG_ERROR, error: error }))
   },
   removeRecord: (action$, actionStart) => {
     return action$
       .ofType(actionStart)
       .switchMap(action => {
         return Observable.fromPromise(
-          firebaseApp
-            .database()
-            .ref(action.recordSetKey + '/' + action.recordKey)
-            .remove()
-        ).switchMap(() => {
-          return concatActions(action)
-        })
+          firebaseRef(action.recordSetKey + '/' + action.recordKey).remove()
+        ).switchMap(() => concatPostActions(action))
       })
-      .catch(error => {
-        return Observable.of({ type: APP.LOG_ERROR, error: error })
-      })
+      .catch(error => Observable.of({ type: APP.LOG_ERROR, error: error }))
   },
-  setRecord: (action$, actionStart) => {
+  saveRecord: (action$, actionStart) => {
     return action$
       .ofType(actionStart)
-      .switchMap((action) => {
+      .switchMap(action => {
         return Observable.fromPromise(
-          firebaseApp
-            .database()
-            .ref(action.recordSetKey + '/' + action.recordKey)
-            .set(action.recordKeyValue)
-        ).switchMap(() => {
-          return concatActions(action)
-        })
+          firebaseRef(action.recordSetKey + '/' + action.recordKey).set(
+            action.recordKeyValue
+          )
+        ).switchMap(() => concatPostActions(action))
       })
-      .catch(error => {
-        return Observable.of({ type: APP.LOG_ERROR, error: error })
-      })
+      .catch(error => Observable.of({ type: APP.LOG_ERROR, error: error }))
   }
 }
 

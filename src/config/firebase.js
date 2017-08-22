@@ -10,4 +10,6 @@ const firebaseApp = firebase.initializeApp({
   messagingSenderId: FIREBASE.MESSAGING_SENDER_ID
 })
 
-export default firebaseApp
+export const firebaseRef = path => {
+  return firebaseApp.database().ref(path)
+}
